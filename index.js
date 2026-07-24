@@ -79,6 +79,7 @@ const programInput = document.getElementById("programInput");
 const inInput = document.getElementById("inInput");
 
 const runButton = document.getElementById("run");
+const convertButton = document.getElementById("convert");
 const stopButton = document.getElementById("stop");
 
 const message = document.getElementById("message");
@@ -97,6 +98,7 @@ const outLed0 = document.getElementById("outLed0");
 
 const assemblyModeButton = document.getElementById("assemblyMode");
 const binaryModeButton = document.getElementById("binaryMode");
+const mktnModeButton = document.getElementById("mktnMode");
 
 const cycleInput = document.getElementById("cycleInput");
 const pcLoopMode = document.getElementById("pcLoopMode");
@@ -104,6 +106,7 @@ const pcLoopMode = document.getElementById("pcLoopMode");
 const binaryOutput = document.getElementById("binaryOutput");
 const copyBinaryButton = document.getElementById("copyBinaryButton");
 const binaryMessage = document.getElementById("binaryMessage");
+const conversionTitle = document.getElementById("conversionTitle");
 
 function updateDisplay() {
     pcValue.textContent = PC;
@@ -156,6 +159,46 @@ function resetState() {
     PC = 0;
 }
 
+function convertProgram(text) {
+    try {
+        if (inputMode === "assembly") {
+            const assembled = assemble(text);
+
+            instructions = assembled.map(item => item.instruction);
+
+            binaryOutput.value = assemblyToBinary(assembled);
+            binaryMessage.textContent = "";
+        } else if (inputMode === "mktn") {
+            const compiled = MktnCompiler.compile(text);
+            instructions = compiled.instructions.map(item => item.value);
+            binaryOutput.value = `${compiled.assembly}\n\n${compiled.binary}`;
+            binaryMessage.textContent = compiled.warnings.join(" ");
+        } else {
+            instructions = parseBinary(text);
+            binaryOutput.value = instructions
+                .map(instructionToBinary)
+                .join("\n");
+            binaryMessage.textContent = "";
+        }
+    } catch (error) {
+        instructions = [];
+        message.textContent = error.message;
+        binaryMessage.textContent = "変換に失敗しました";
+        return false;
+    }
+
+    if (instructions.length === 0) {
+        message.textContent = "プログラムが見つかりません";
+        return false;
+    }
+    message.textContent = `${instructions.length}命令に変換しました`;
+    return true;
+}
+
+convertButton.addEventListener("click", () => {
+    convertProgram(programInput.value);
+});
+
 runButton.addEventListener("click", () => {
     if (isPlaying) {
         message.textContent = "実行中です";
@@ -165,23 +208,7 @@ runButton.addEventListener("click", () => {
     const cycle = Math.max(1, Math.min(1000, cycleInput.value));
     cycleInput.value = cycle;
 
-    const text = programInput.value;
-
-    if (inputMode === "assembly") {
-        const assembled = assemble(text);
-
-        instructions = assembled.map(item => item.instruction);
-
-        binaryOutput.value = assemblyToBinary(assembled);
-        binaryMessage.textContent = "";
-    } else {
-        instructions = parseBinary(text);
-    }
-
-    if (instructions.length === 0) {
-        message.textContent = "プログラムが見つかりません";
-        return;
-    }
+    if (!convertProgram(programInput.value)) return;
 
     fillInstructions(instructions);
 
@@ -237,8 +264,10 @@ assemblyModeButton.addEventListener("click", () => {
 
     assemblyModeButton.classList.add("active");
     binaryModeButton.classList.remove("active");
+    mktnModeButton.classList.remove("active");
 
     programInput.placeholder = "例:\nIN A\nADD A, 1\nOUT B";
+    conversionTitle.textContent = "Assembly → Binary";
 });
 
 binaryModeButton.addEventListener("click", () => {
@@ -246,8 +275,21 @@ binaryModeButton.addEventListener("click", () => {
 
     binaryModeButton.classList.add("active");
     assemblyModeButton.classList.remove("active");
+    mktnModeButton.classList.remove("active");
 
     programInput.placeholder = "例:\nB00100000\nB00000001\nB10010000";
+    conversionTitle.textContent = "Binary";
+});
+
+mktnModeButton.addEventListener("click", () => {
+    inputMode = "mktn";
+
+    mktnModeButton.classList.add("active");
+    assemblyModeButton.classList.remove("active");
+    binaryModeButton.classList.remove("active");
+
+    programInput.placeholder = "例:\nprogram {\n  x = in();\n  x = x + 1;\n  out(x);\n}";
+    conversionTitle.textContent = "MKTN → Assembly → Binary";
 });
 
 
@@ -414,5 +456,5 @@ copyBinaryButton.addEventListener("click", async () => {
     );
 
     binaryMessage.textContent =
-        "Binaryをコピーしました";
+        "変換結果をコピーしました";
 });

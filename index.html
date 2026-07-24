@@ -31,11 +31,16 @@
                         <button id="binaryMode" class="mode-button">
                             Binary
                         </button>
+
+                        <button id="mktnMode" class="mode-button">
+                            MKTN
+                        </button>
                     </div>
                 </div>
 
                 <textarea id="programInput"></textarea>
                 <div class="controls">
+                    <button id="convert">変換</button>
                     <button id="run">実行</button>
                     <button id="stop">停止</button>
                 </div>
@@ -147,12 +152,12 @@
 
             <section class="card binary-card">
 
-                <h2>Assembly → Binary</h2>
+                <h2 id="conversionTitle">Assembly → Binary</h2>
 
                 <textarea id="binaryOutput" readonly placeholder="Assemblyを入力するとBinaryが表示されます"></textarea>
 
                 <div class="controls">
-                    <button id="copyBinaryButton"> Binaryをコピー </button>
+                    <button id="copyBinaryButton">変換結果をコピー</button>
                 </div>
 
                 <p id="binaryMessage" class="message"></p>
@@ -164,6 +169,7 @@
 
     </main>
 
+    <script src="mktn-compiler.js"></script>
     <script src="index.js"></script>
 </body>
 

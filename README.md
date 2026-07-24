@@ -1,7 +1,7 @@
 # 4bit CPU Simulator
 
 4bit CPUの動作をシミュレーションするWebアプリです。
-AssemblyモードとBinaryモードに対応しています。
+Assemblyモード、Binaryモード、MKTNモードに対応しています。
 
 ## できること
 
@@ -12,6 +12,7 @@ AssemblyモードとBinaryモードに対応しています。
 * PC、A、B、IN、OUT、FLAGの確認
 * OUTを4つのLEDで表示
 * AssemblyをBinaryに変換
+* MKTNソースをAssemblyとBinaryに変換して、そのまま実行
 * 周期の変更
 
 ## 使い方
@@ -38,6 +39,29 @@ B01000000
 B00000001
 B10010000
 ```
+
+## MKTNの例
+
+```
+program {
+    x = in();
+    if (x >= 3) {
+        x = x - 1;
+    } else {
+        x = x + 1;
+    }
+    out(x);
+}
+```
+
+MKTNモードは参照MKTNコンパイラ v1.20 と同じく、変数 `x`、
+`in()` / `out()`、加減算、`if` / `else`、`while`、および
+`> >= < <= == !=` に対応します。生成できるプログラムはCPUの
+命令メモリに合わせて最大16命令です。
+
+「変換」ボタンではプログラムを実行せずに変換結果を確認できます。
+MKTNの場合は、生成されたAssemblyとArduinoへ貼り付け可能な
+`byte prog[16]` 形式のBinaryを表示します。
 
 ## CPU Status
 
