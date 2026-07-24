@@ -60,8 +60,8 @@ MKTNモードは参照MKTNコンパイラ v1.20 と同じく、変数 `x`、
 命令メモリに合わせて最大16命令です。
 
 「変換」ボタンではプログラムを実行せずに変換結果を確認できます。
-MKTNの場合は、生成されたAssemblyとArduinoへ貼り付け可能な
-`byte prog[16]` 形式のBinaryを表示します。
+MKTNモードでは出力形式から、生成されたAssemblyまたはArduinoへ
+貼り付け可能な `byte prog[16]` 形式の機械語を選択できます。
 
 ## CPU Status
 
